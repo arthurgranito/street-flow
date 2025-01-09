@@ -19,12 +19,12 @@ const LandingPage = () => {
           Crie sua conta e venha conhecer nossos produtos!
         </h2>
         <div className="flex gap-4 w-full items-center justify-between max-w-[400px] sm:max-w-[500px]">
-          <Link to={'/'}  className="w-full">
+          <Link to={'/register'}  className="w-full">
             <Button variant="outline" className="w-full">
               Cadastrar
             </Button>
           </Link>
-          <Link to={"/inicio"} className="w-full">
+          <Link to={"/login"} className="w-full">
             <Button className="w-full">Entrar</Button>
           </Link>
         </div>
