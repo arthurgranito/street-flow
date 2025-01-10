@@ -10,6 +10,10 @@
   background-size: cover;
 }
 
+.titulo{
+  text-shadow: 10px 10px 10px black;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

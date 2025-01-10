@@ -12,6 +12,7 @@ import { Separator } from "../ui/separator";
 import NavInicio from "../NavInicio";
 import googleIcon from "../Login/google-icon.png";
 import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [visible, setVisible] = useState(false);
@@ -20,11 +21,11 @@ const LoginPage = () => {
     <>
       <NavInicio />
       <div className="main-inicio flex h-screen items-center justify-center bg-primary">
-        <Card className="w-full m-10">
+        <Card className="w-full m-10 max-w-[500px]">
           <CardHeader>
             <CardTitle className="text-3xl font-bold">Entrar</CardTitle>
             <CardDescription className="text-base">
-              Entre na sua conta
+              Entre com seu email ou Google
             </CardDescription>
           </CardHeader>
 
@@ -34,7 +35,8 @@ const LoginPage = () => {
                 <Label htmlFor="email">Email</Label>
                 <div className="flex w-full items-center gap-3 mt-2 border p-2 rounded-lg">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  <input type="email"
+                  <input
+                    type="email"
                     id="email"
                     placeholder="Seu email"
                     className="outline-none"
@@ -60,12 +62,17 @@ const LoginPage = () => {
                       onClick={() => setVisible(!visible)}
                     />
                   ) : (
-                    <EyeClosed className="w-5 h-5 text-gray-600" onClick={() => setVisible(!visible)}/>
+                    <EyeClosed
+                      className="w-5 h-5 text-gray-600"
+                      onClick={() => setVisible(!visible)}
+                    />
                   )}
                 </div>
               </div>
 
-              <Button type="submit">Entrar</Button>
+              <Button type="submit" className="w-full mb-1">
+                Entrar
+              </Button>
             </form>
 
             <div className="flex items-center gap-4 mt-4">
@@ -78,6 +85,13 @@ const LoginPage = () => {
               <img src={googleIcon} className="w-4 h-4" />
               Entre com o Google
             </Button>
+
+            <p className="text-center text-sm mt-2 text-muted-foreground">
+              Ainda não possui uma conta?{" "}
+              <Link to={"/register"} className="text-blue-600 underline">
+                Cadastrar
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </div>
