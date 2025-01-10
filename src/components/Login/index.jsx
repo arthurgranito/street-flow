@@ -26,8 +26,10 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [incorret, setIncorrect] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -47,6 +49,7 @@ const LoginPage = () => {
       console.error("Erro ao logar:", error.message);
       setIncorrect(true);
     }
+    setLoading(false);
   };
 
   return (
@@ -55,6 +58,15 @@ const LoginPage = () => {
       <div className="main-inicio flex h-screen items-center justify-center bg-primary">
         <div className="container-main flex items-center justify-center w-full">
           <Card className="w-full m-10 max-w-[500px]">
+            {loading &&
+                <>
+                  <div className="bg-white w-full h-full absolute top-0 left-0 z-50 flex items-center justify-center">
+                    <div className="loading">
+          
+                    </div>
+                  </div>
+                </>
+            }
             <CardHeader>
               <CardTitle className="text-3xl font-bold">Entrar</CardTitle>
               <CardDescription className="text-base">

@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { signOut } from "firebase/auth";
 import { auth, db } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { Navigate } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Sheet,
@@ -29,6 +30,7 @@ const NavApp = () => {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,12 +50,25 @@ const NavApp = () => {
           console.error("Erro ao recuperar dados do usuário:", error.message);
         }
       }
-
       setLoading(false);
     };
 
     fetchUserData();
   }, []);
+
+  if (!auth.currentUser) {
+    return <Navigate to="/login" />;
+  }
+
+  if (loading) {
+    return (
+      <>
+        <div className="bg-white w-screen h-screen absolute top-0 left-0 z-50 flex items-center justify-center">
+          <div className="loading"></div>
+        </div>
+      </>
+    );
+  }
 
   const handleLogout = async () => {
     try {
@@ -81,7 +96,7 @@ const NavApp = () => {
             </Avatar>
           </SheetTrigger>
 
-          <SheetContent>
+          <SheetContent className="flex flex-col justify-between">
             <SheetHeader>
               <div className="w-full flex items-center justify-center gap-3">
                 <Avatar className="sm:hidden">
@@ -90,10 +105,33 @@ const NavApp = () => {
                 </Avatar>
                 <div className="w-full flex flex-col items-start">
                   <SheetTitle>{userData.name}</SheetTitle>
-                  <SheetDescription>{userData.email}</SheetDescription>
+                  <SheetDescription>{userData.username}</SheetDescription>
                 </div>
               </div>
             </SheetHeader>
+
+            <SheetFooter>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => handleLogout()}
+                      className="flex shrink-0 items-center justify-end rounded-lg text-red-500 gap-2"
+                    >
+                      <span className="font-semibold">Sair</span>
+                      <LogOut />
+                    </button>
+                  </TooltipTrigger>
+
+                  <TooltipContent
+                    side="right"
+                    className="bg-white shadow-md px-2 py-1 text-muted-foreground rounded-lg"
+                  >
+                    Sair
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </SheetFooter>
           </SheetContent>
         </Sheet>
 
