@@ -1,16 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PiSneaker } from "react-icons/pi";
-import {
-  Home,
-  LogOutIcon,
-  Package,
-  Search,
-  Settings2,
-  Shirt,
-  ShoppingBag,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
+import { Home, LogOut, Search, Shirt, ShoppingCart } from "lucide-react";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
@@ -19,10 +9,61 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { signOut } from "firebase/auth";
+import { auth, db } from "@/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 
 const NavApp = () => {
+  const navigate = useNavigate();
+
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+
+      if (user) {
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userRef);
+
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          } else {
+            console.log("Documento do usuário não encontrado.");
+          }
+        } catch (error) {
+          console.error("Erro ao recuperar dados do usuário:", error.message);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/landingPage");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error.message);
+    }
+  };
+
   return (
     <>
       <div className="p-4 sticky top-0 left-0 flex items-center justify-between sm:ml-14">
@@ -32,10 +73,29 @@ const NavApp = () => {
           </h1>
         </div>
 
-        <Avatar className="sm:hidden">
-          <AvatarImage src="https://github.com/arthurgranito.png" />
-          <AvatarFallback>AG</AvatarFallback>
-        </Avatar>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Avatar className="sm:hidden">
+              <AvatarImage src="https://github.com/arthurgranito.png" />
+              <AvatarFallback>AG</AvatarFallback>
+            </Avatar>
+          </SheetTrigger>
+
+          <SheetContent>
+            <SheetHeader>
+              <div className="w-full flex items-center justify-center gap-3">
+                <Avatar className="sm:hidden">
+                  <AvatarImage src="https://github.com/arthurgranito.png" />
+                  <AvatarFallback>AG</AvatarFallback>
+                </Avatar>
+                <div className="w-full flex flex-col items-start">
+                  <SheetTitle>{userData.name}</SheetTitle>
+                  <SheetDescription>{userData.email}</SheetDescription>
+                </div>
+              </div>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
 
         <form className="hidden sm:flex items-center justify-between border rounded-lg">
           <input
@@ -75,13 +135,14 @@ const NavApp = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
+                <Link
+                  to={"/"}
                   href="#"
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <Home className="h-5 w-5" />
                   <span className="sr-only">Início</span>
-                </a>
+                </Link>
               </TooltipTrigger>
 
               <TooltipContent
@@ -150,9 +211,32 @@ const NavApp = () => {
             </Tooltip>
           </TooltipProvider>
         </nav>
+
+        <nav className="mt-auto flex items-center justify-center mb-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => handleLogout()}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-500"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span className="sr-only">Sair</span>
+                </button>
+              </TooltipTrigger>
+
+              <TooltipContent
+                side="right"
+                className="bg-white shadow-md px-2 py-1 text-muted-foreground rounded-lg"
+              >
+                Sair
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </nav>
       </aside>
 
-      <div className="absolute bottom-0 border-t w-full left-0 sm:hidden">
+      <div className="fixed bottom-0 border-t w-full left-0 sm:hidden">
         <nav className="p-2 flex items-center gap-3 justify-center">
           <div className="flex flex-col items-center">
             <button className="h-10 w-10 flex items-center justify-center">
